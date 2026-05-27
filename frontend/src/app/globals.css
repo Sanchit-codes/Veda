@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@theme {
+  /* Typography */
+  --font-bricolage: "Bricolage Grotesque", sans-serif;
+  --font-inter: "Inter", sans-serif;
+
+  /* Text colors */
+  --color-text-primary: #303030;
+  --color-text-secondary: rgba(94, 94, 94, 0.8);
+  --color-text-muted: #a9a9a9;
+
+  /* Backgrounds */
+  --color-bg-off-white: #f0f0f0;
+  --color-bg-surface: #f6f6f6;
+
+  /* Buttons */
+  --color-btn-dark: #181818;
+  --color-btn-orange: #ff5623;
+  --color-accent-orange: #ff7950;
+
+  /* Brand */
+  --color-navy: #011625;
+  --color-grey-2: #d4d4d4;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  /* Default page gradient — AppShell overrides per-page where needed */
+  background: linear-gradient(to bottom, #eeeeee, #dadada);
+  background-attachment: fixed; /* keeps gradient uniform on scroll */
+}
+
+body {
+  min-height: 100%;
+  background: transparent; /* inherits html gradient */
+  color: #303030;
+  font-family: "Bricolage Grotesque", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #dadada;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a9a9a9;
+}
