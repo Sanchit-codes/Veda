@@ -1,13 +1,20 @@
 version: "3.9"
 
 services:
-  mongo:
+  mongodb:
     image: mongo:7
     container_name: vedaai-mongo
     ports:
       - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: vedaai
     volumes:
       - mongo-data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
   redis:
@@ -15,33 +22,61 @@ services:
     container_name: vedaai-redis
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: vedaai-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    # Pull gemma4-e2b model on startup (optional, can be slow)
+    # Uncomment to auto-pull: command: ollama pull gemma4-e2b
 
   backend:
     build:
-      context: ../backend
-      dockerfile: ../docker/Dockerfile.backend
+      context: ..
+      dockerfile: docker/Dockerfile.backend
     container_name: vedaai-backend
     ports:
       - "4000:4000"
     environment:
+      NODE_ENV: production
       PORT: 4000
-      MONGO_URI: mongodb://mongo:27017/vedaai
+      MONGODB_URI: mongodb://mongodb:27017/vedaai
       REDIS_URL: redis://redis:6379
-      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
-      FRONTEND_URL: http://localhost:3000
-      UPLOADS_DIR: /app/uploads
+      OLLAMA_URL: http://ollama:11434
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
     volumes:
-      - uploads:/app/uploads
+      - uploads:/app/backend/uploads
     depends_on:
-      - mongo
-      - redis
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
     restart: unless-stopped
 
   frontend:
     build:
-      context: ../frontend
-      dockerfile: ../docker/Dockerfile.frontend
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
     container_name: vedaai-frontend
     ports:
       - "3000:3000"
@@ -54,4 +89,5 @@ services:
 
 volumes:
   mongo-data:
+  ollama-data:
   uploads:
