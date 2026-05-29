@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAssignmentStore } from "@/stores/useAssignmentStore";
 import { assignmentsApi } from "@/lib/api";
+import EmptyIllustration from "@/components/ui/EmptyIllustration";
+import Button from "@/components/ui/Button";
 import AssignmentListCard from "./AssignmentListCard";
 
 export default function AssignmentsContent() {
@@ -98,10 +100,34 @@ export default function AssignmentsContent() {
       {/* ── Cards grid ── */}
       <div className="px-8 pb-32 flex-1">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <p className="text-base text-[#a9a9a9]" style={{ letterSpacing: "-0.64px" }}>
-              {search ? "No assignments match your search." : "No assignments yet."}
-            </p>
+          <div className="flex flex-col items-center justify-center min-h-[calc(100vh-300px)] gap-8">
+            <div className="flex flex-col items-center gap-3">
+              <EmptyIllustration size={250} />
+              <div className="flex flex-col items-center gap-0.5 text-center max-w-[486px]">
+                <h2 className="text-xl font-bold text-[#303030] tracking-[-0.8px] leading-[1.4]">
+                  {search ? "No assignments match" : "No assignments yet"}
+                </h2>
+                <p className="text-base font-normal text-[rgba(94,94,94,0.8)] tracking-[-0.64px] leading-[1.4]">
+                  {search
+                    ? "Try adjusting your search filters or create a new assignment."
+                    : "Create your first assignment to start collecting and grading student submissions."}
+                </p>
+              </div>
+            </div>
+            {!search && (
+              <Link href="/assignments/new">
+                <Button
+                  variant="dark"
+                  iconLeft={
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path d="M10 3V17M3 10H17" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  }
+                >
+                  Create Your First Assignment
+                </Button>
+              </Link>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4">
