@@ -142,37 +142,6 @@ export default function AssignmentsContent() {
         )}
       </div>
 
-      {/* ── Floating bottom gradient + Create Assignment button ── */}
-      {/* Gradient fade matches the image — blurs out the last row of cards */}
-      <div
-        className="fixed bottom-0 z-20 flex flex-col items-center justify-end pb-8"
-        style={{
-          left: "327px",
-          right: "12px",
-          height: "120px",
-          background: "linear-gradient(to bottom, transparent, rgba(232,232,232,0.95) 55%)",
-          pointerEvents: "none",
-        }}
-      />
-      <div
-        className="fixed bottom-8 z-30 -translate-x-1/2"
-        style={{ left: "calc(50% + 157px)" }}
-      >
-        <Link
-          href="/assignments/new"
-          className="flex items-center gap-2 px-7 h-12 rounded-full bg-[#181818] text-white text-sm font-semibold hover:bg-[#2b2b2b] transition-colors"
-          style={{
-            letterSpacing: "-0.48px",
-            boxShadow: "0px 4px 20px rgba(0,0,0,0.25)",
-          }}
-        >
-          <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-            <path d="M10 3V17M3 10H17" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-          </svg>
-          Create Assignment
-        </Link>
-      </div>
-
       {/* ── Delete confirmation modal ── */}
       {confirmId && (
         <div
