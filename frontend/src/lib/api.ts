@@ -1,8 +1,15 @@
 import axios from "axios";
 import type { Assignment, AssignmentListItem, SectionConfig } from "@/types/assignment";
 
+// Use the Next.js rewrite proxy (/api → backend) in browser to avoid mixed content.
+// NEXT_PUBLIC_API_URL is only used server-side or local dev without the proxy.
+const baseURL =
+  typeof window !== "undefined"
+    ? "/api"
+    : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api");
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api",
+  baseURL,
   headers: { "Content-Type": "application/json" },
   withCredentials: false,
 });

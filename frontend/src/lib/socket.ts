@@ -6,7 +6,14 @@ let socket: Socket | null = null;
 
 export function getSocket(): Socket {
   if (!socket) {
-    socket = io(process.env.NEXT_PUBLIC_WS_URL ?? "http://localhost:4000", {
+    // In browser use same origin (HTTPS) to avoid mixed-content blocks.
+    // NEXT_PUBLIC_WS_URL is only used in SSR or local dev without proxy.
+    const wsUrl =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : (process.env.NEXT_PUBLIC_WS_URL ?? "http://localhost:4000");
+
+    socket = io(wsUrl, {
       transports: ["websocket"],
       autoConnect: false,
     });
