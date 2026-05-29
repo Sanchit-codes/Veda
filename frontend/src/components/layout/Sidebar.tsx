@@ -21,17 +21,14 @@ const navItems = [
     ),
   },
   {
-    label: "My Groups",
+    label: "My Classes",
     href: "/groups",
     exact: false,
     badge: null,
     icon: (
-      /* Two people/users icon */
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <circle cx="7.5" cy="7" r="3" stroke="currentColor" strokeWidth="1.25"/>
-        <path d="M1 17C1 14.2386 4.02944 12 7.5 12C8.38 12 9.22 12.17 10 12.48" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
-        <circle cx="14" cy="7.5" r="2.5" stroke="currentColor" strokeWidth="1.25"/>
-        <path d="M10.5 16.5C10.5 14.567 12.067 13 14 13C15.933 13 17.5 14.567 17.5 16.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
+        <rect x="2" y="3" width="16" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.25"/>
+        <path d="M6 7H14M6 10H11" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
       </svg>
     ),
   },
@@ -41,7 +38,6 @@ const navItems = [
     exact: false,
     badge: null,
     icon: (
-      /* Document / file-text icon */
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
         <path d="M4 3H13L16 6V17H4V3Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/>
         <path d="M12.5 3V6.5H16" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/>
@@ -50,17 +46,15 @@ const navItems = [
     ),
   },
   {
-    label: "AI Teacher's Toolkit",
+    label: "Analytics",
     href: "/toolkit",
     exact: false,
     badge: null,
     icon: (
-      /* Open book icon */
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M3 4C3 4 5 3 10 3C15 3 17 4 17 4V16C17 16 15 15 10 15C5 15 3 16 3 16V4Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/>
-        <path d="M10 3V15" stroke="currentColor" strokeWidth="1.25"/>
-        <path d="M6 6.5H8.5M6 9H8.5M6 11.5H8.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
-        <path d="M11.5 6.5H14M11.5 9H14M11.5 11.5H14" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
+        <rect x="2" y="10" width="4" height="7" rx="1" stroke="currentColor" strokeWidth="1.25"/>
+        <rect x="8" y="6" width="4" height="11" rx="1" stroke="currentColor" strokeWidth="1.25"/>
+        <rect x="14" y="2" width="4" height="15" rx="1" stroke="currentColor" strokeWidth="1.25"/>
       </svg>
     ),
   },

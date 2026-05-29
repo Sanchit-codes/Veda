@@ -61,11 +61,20 @@ export default function TopBar({
         </span>
       </div>
 
-      {/* Right: notifications + user */}
+      {/* Right: help + notifications + user */}
       <div className="flex items-center gap-2 shrink-0">
+        {/* Help */}
+        <div className="size-9 flex items-center justify-center bg-[#f6f6f6] rounded-full">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="7.5" stroke="#303030" strokeWidth="1.25"/>
+            <path d="M7.5 7.5C7.5 6.12 8.62 5 10 5C11.38 5 12.5 6.12 12.5 7.5C12.5 8.88 11 9.5 10 10.5V11.5" stroke="#303030" strokeWidth="1.25" strokeLinecap="round"/>
+            <circle cx="10" cy="14" r="0.75" fill="#303030"/>
+          </svg>
+        </div>
+
         {/* Bell */}
         <div className="relative size-9 flex items-center justify-center bg-[#f6f6f6] rounded-full">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <path
               d="M5 10C5 7.23858 7.23858 5 10 5H14C16.7614 5 19 7.23858 19 10V15L20.5 17.5H3.5L5 15V10Z"
               stroke="#303030"
@@ -82,20 +91,17 @@ export default function TopBar({
         </div>
 
         {/* User pill */}
-        <div
-          className="flex items-center gap-1.5 px-3 py-[6px] rounded-xl cursor-pointer hover:bg-white/60 transition-colors"
-          style={{ boxShadow: "0px 16px 24px rgba(0,0,0,0.12), 0px 32px 24px rgba(0,0,0,0.2)" }}
-        >
-          <div className="size-8 rounded-full bg-[#f6f6f6] flex items-center justify-center text-sm font-semibold text-[#303030] overflow-hidden shrink-0">
-            J
+        <div className="flex items-center gap-2 px-2 py-1.5 rounded-xl cursor-pointer hover:bg-white/60 transition-colors">
+          <div className="size-8 rounded-full overflow-hidden shrink-0 bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-xs font-bold text-white">
+            MR
           </div>
           <span
-            className="text-base font-semibold text-[#303030]"
-            style={{ letterSpacing: "-0.64px" }}
+            className="text-sm font-semibold text-[#303030]"
+            style={{ letterSpacing: "-0.48px" }}
           >
-            John Doe
+            Madhur Rastogi
           </span>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path
               d="M8 10L12 14L16 10"
               stroke="#303030"
