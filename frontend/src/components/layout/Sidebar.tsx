@@ -92,14 +92,11 @@ export default function Sidebar() {
 
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <div
-            className="size-10 rounded-[10px] flex items-center justify-center shrink-0 overflow-hidden"
-            style={{ background: "linear-gradient(to bottom, #e56820, #d45e3e)" }}
-          >
-            <svg width="22" height="14" viewBox="0 0 22 18" fill="none">
-              <path d="M1 17L7 1L11 11L15 5L21 17" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
+          <img
+            src="/logo.png"
+            alt="VedaAI"
+            className="size-10 rounded-[10px] shrink-0 object-cover"
+          />
           <span
             className="text-[28px] font-bold text-[#303030] leading-none"
             style={{ letterSpacing: "-1.68px" }}

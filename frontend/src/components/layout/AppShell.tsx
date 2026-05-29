@@ -38,14 +38,11 @@ export default function AppShell({
       <div className="lg:hidden flex flex-col min-h-screen">
         <header className="sticky top-0 z-20 bg-white/90 backdrop-blur-sm px-4 py-3 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2">
-            <div
-              className="size-7 rounded-lg flex items-center justify-center"
-              style={{ background: "linear-gradient(to bottom, #e56820, #d45e3e)" }}
-            >
-              <svg width="14" height="12" viewBox="0 0 22 18" fill="none">
-                <path d="M1 17L7 1L11 11L15 5L21 17" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
+            <img
+              src="/logo.png"
+              alt="VedaAI"
+              className="size-7 rounded-lg object-cover"
+            />
             <span className="text-xl font-bold text-[#303030]" style={{ letterSpacing: "-1.2px" }}>
               VedaAI
             </span>
