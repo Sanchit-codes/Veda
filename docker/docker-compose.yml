@@ -69,8 +69,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      ollama:
-        condition: service_healthy
     restart: unless-stopped
 
   frontend:
@@ -81,8 +79,8 @@ services:
     ports:
       - "3020:3020"
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:4900/api
-      NEXT_PUBLIC_WS_URL: http://localhost:4900
+      # Server-side only — used by Next.js rewrite proxy (not baked into browser bundle)
+      BACKEND_URL: http://backend:4900
     depends_on:
       - backend
     restart: unless-stopped

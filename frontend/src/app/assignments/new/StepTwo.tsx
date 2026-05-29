@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAssignmentDraftStore } from "@/stores/useAssignmentDraftStore";
 import Input from "@/components/ui/Input";
@@ -7,13 +8,15 @@ import Button from "@/components/ui/Button";
 
 export default function StepTwo() {
   const router = useRouter();
+  const navigating = useRef(false);
   const { title, subject, className, schoolName, timeAllowed, setField, setStep } =
     useAssignmentDraftStore();
 
   const isValid = title.trim() && subject.trim() && className.trim();
 
   const handleGenerate = () => {
-    // Navigate to generating screen — API wiring in integration phase
+    if (navigating.current) return;
+    navigating.current = true;
     router.push("/assignments/new/generating");
   };
 

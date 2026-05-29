@@ -13,9 +13,19 @@ export default function AssignmentsContent() {
   const [search, setSearch] = useState("");
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
-    assignmentsApi.list().then(({ data }) => setAssignments(data)).catch(console.error);
+    assignmentsApi
+      .list()
+      .then(({ data }) => {
+        setFetchError(null);
+        setAssignments(data);
+      })
+      .catch((err) => {
+        console.error(err);
+        setFetchError("Could not load assignments. Check your connection.");
+      });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function requestDelete(id: string) {
@@ -44,6 +54,13 @@ export default function AssignmentsContent() {
 
   return (
     <div className="relative min-h-[calc(100vh-82px)] flex flex-col">
+
+      {/* ── API error banner ── */}
+      {fetchError && (
+        <div className="mx-8 mt-6 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-600">
+          {fetchError}
+        </div>
+      )}
 
       {/* ── Page header — only show if not empty ── */}
       {!isEmpty && (

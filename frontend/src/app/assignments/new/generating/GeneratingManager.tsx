@@ -5,17 +5,17 @@ import { useRouter } from "next/navigation";
 import { useAssignmentDraftStore } from "@/stores/useAssignmentDraftStore";
 import { useGenerationStore } from "@/stores/useGenerationStore";
 import { assignmentsApi } from "@/lib/api";
-import { subscribeToAssignment } from "@/lib/socket";
 import StreamingPaper from "./StreamingPaper";
 
 type Phase = "creating" | "uploading" | "queuing" | "generating" | "completed" | "failed";
+
+const POLL_INTERVAL_MS = 3000;
 
 export default function GeneratingManager() {
   const router = useRouter();
   const started = useRef(false);
   const navigated = useRef(false);
-
-  // Keep assignmentId in a ref so navigation never depends on async store state
+  const pollTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const assignmentIdRef = useRef<string | null>(null);
 
   const [phase, setPhase] = useState<Phase>("creating");
@@ -30,45 +30,70 @@ export default function GeneratingManager() {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Subscribe to generation store — reactive
-  const status = useGenerationStore((s) => s.status);
-  const sections = useGenerationStore((s) => s.sections);
-  const storeAssignmentId = useGenerationStore((s) => s.assignmentId);
-
-  // Capture total sections once at mount so reset() doesn't change it mid-flight
-  // Use getState() so we always read the user's actual section count, not a stale render snapshot
-  const totalSectionsRef = useRef(useAssignmentDraftStore.getState().sections.length || 1);
-  const totalSections = totalSectionsRef.current;
-
   // ── Navigate helper (idempotent) ─────────────────────────────────────────
   function navigateToOutput(id: string) {
     if (navigated.current) return;
     navigated.current = true;
-    console.log("[GEN] Navigating to output for assignment", id);
-    // Mark completed so the output page never sees a stale "generating" status
+    if (pollTimer.current) clearInterval(pollTimer.current);
+    sessionStorage.removeItem("veda_gen_lock");
     useGenerationStore.getState().setStatus("completed");
     useAssignmentDraftStore.getState().reset();
     router.push(`/assignments/${id}/output`);
   }
 
-  // ── API + WebSocket setup ────────────────────────────────────────────────
+  // ── Poll job status via HTTP ──────────────────────────────────────────────
+  function startPolling(assignmentId: string) {
+    const addStep = (step: string) =>
+      useGenerationStore.getState().addThinkingStep(step);
+
+    pollTimer.current = setInterval(async () => {
+      try {
+        const { data: job } = await assignmentsApi.generationStatus(assignmentId);
+        console.log("[POLL] job status:", job.status, "progress:", job.progress);
+
+        if (job.status === "started" || job.status === "generating") {
+          setPhase("generating");
+          useGenerationStore.getState().setStatus("generating");
+          if (job.currentSectionIndex > 0) {
+            addStep(`Generating section ${job.currentSectionIndex} of ${job.totalSections}…`);
+          }
+        }
+
+        if (job.status === "completed") {
+          addStep("All sections generated!");
+          navigateToOutput(assignmentId);
+        }
+
+        if (job.status === "failed") {
+          if (pollTimer.current) clearInterval(pollTimer.current);
+          const msg = job.error || "Generation failed";
+          setErrorMsg(msg);
+          setPhase("failed");
+          useGenerationStore.getState().setError(msg);
+        }
+      } catch (err) {
+        console.warn("[POLL] Status check failed:", err);
+      }
+    }, POLL_INTERVAL_MS);
+  }
+
+  // ── Main flow ─────────────────────────────────────────────────────────────
   useEffect(() => {
     if (started.current) return;
+    // sessionStorage lock prevents double-creation if the component remounts
+    if (sessionStorage.getItem("veda_gen_lock") === "1") return;
     started.current = true;
-
-    let unsubSocket: (() => void) | null = null;
+    sessionStorage.setItem("veda_gen_lock", "1");
 
     const addStep = (step: string) =>
       useGenerationStore.getState().addThinkingStep(step);
 
     const run = async () => {
       try {
-        // 1. Create assignment
-        // Read state at call time via getState() to avoid stale closure issues
-        // in React 19 concurrent rendering (hook snapshot can be from an earlier render)
         const currentDraft = useAssignmentDraftStore.getState();
         setPhase("creating");
         addStep("Setting up your assignment…");
+
         const { data: assignment } = await assignmentsApi.create({
           title: currentDraft.title || "Untitled Assignment",
           subject: currentDraft.subject || "General",
@@ -83,9 +108,7 @@ export default function GeneratingManager() {
 
         const id = assignment._id;
         assignmentIdRef.current = id;
-
         useGenerationStore.getState().startGeneration(id);
-        // Re-add the step that was just cleared by startGeneration
         addStep("Setting up your assignment…");
 
         if (currentDraft.syllabusText?.trim()) {
@@ -94,7 +117,7 @@ export default function GeneratingManager() {
           addStep(`${currentDraft.sections.length} section${currentDraft.sections.length !== 1 ? "s" : ""} queued for generation`);
         }
 
-        // 2. Upload files
+        // Upload files if any
         if (currentDraft.uploadedFiles.length > 0) {
           setPhase("uploading");
           addStep(`Uploading ${currentDraft.uploadedFiles.length} file${currentDraft.uploadedFiles.length !== 1 ? "s" : ""} and extracting text…`);
@@ -102,15 +125,17 @@ export default function GeneratingManager() {
           addStep("Source material processed — ready to generate");
         }
 
-        // 3. Subscribe to WebSocket BEFORE triggering — avoid missing events
-        unsubSocket = subscribeToAssignment(id);
-
-        // 4. Trigger generation
+        // Trigger generation
         setPhase("queuing");
         addStep("Connecting to AI model…");
         await assignmentsApi.generate(id);
         setPhase("generating");
+        addStep("AI is generating your questions…");
+
+        // Start polling instead of WebSocket
+        startPolling(id);
       } catch (err: unknown) {
+        sessionStorage.removeItem("veda_gen_lock");
         const msg = err instanceof Error ? err.message : "Something went wrong";
         setErrorMsg(msg);
         setPhase("failed");
@@ -121,29 +146,9 @@ export default function GeneratingManager() {
     run();
 
     return () => {
-      unsubSocket?.();
+      if (pollTimer.current) clearInterval(pollTimer.current);
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ── Navigate when job:completed fires ───────────────────────────────────
-  useEffect(() => {
-    const id = assignmentIdRef.current ?? storeAssignmentId;
-    if (!id) return;
-    if (status === "completed") {
-      navigateToOutput(id);
-    }
-  }, [status, storeAssignmentId]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ── Fallback: navigate once all sections have arrived ───────────────────
-  // Handles the case where job:completed is missed/delayed
-  useEffect(() => {
-    const id = assignmentIdRef.current ?? storeAssignmentId;
-    if (!id) return;
-    if (sections.length > 0 && sections.length >= totalSections) {
-      console.log(`[GEN] All ${sections.length}/${totalSections} sections received — navigating`);
-      navigateToOutput(id);
-    }
-  }, [sections.length, totalSections, storeAssignmentId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Error state ──────────────────────────────────────────────────────────
   if (phase === "failed") {
