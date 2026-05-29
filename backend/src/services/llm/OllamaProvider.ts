@@ -12,8 +12,18 @@ import { PromptBuilder } from "../prompt/PromptBuilder";
 import { generatedSectionSchema, questionSchema } from "../prompt/schema";
 import { config } from "../../config";
 
-const MODEL = "gemma4-e2b:latest";
+const MODEL = process.env.OLLAMA_MODEL || "llama2:latest";
 const BASE_URL = `${config.ollamaUrl}/v1`;
+
+const SUPPORTED_MODELS = [
+  "llama2:latest",
+  "llama2:7b",
+  "mistral:latest",
+  "neural-chat:latest",
+  "gemma4-e2b:latest",
+  "phi:latest",
+  "orca-mini:latest",
+];
 
 export class OllamaProvider implements LLMProvider {
   private client: OpenAI;
