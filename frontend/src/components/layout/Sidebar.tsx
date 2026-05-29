@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   {
     label: "Home",
-    href: "/assignments",
+    href: "/",
     exact: true,
     badge: null,
     icon: (

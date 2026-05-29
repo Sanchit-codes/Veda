@@ -40,74 +40,79 @@ export default function AssignmentsContent() {
     : assignments;
 
   const confirmTarget = assignments.find((a) => a._id === confirmId);
+  const isEmpty = filtered.length === 0;
 
   return (
     <div className="relative min-h-[calc(100vh-82px)] flex flex-col">
 
-      {/* ── Page header ── */}
-      <div className="px-8 pt-8 pb-4">
-        <div className="flex items-center gap-2.5 mb-1">
-          <div className="size-3.5 rounded-full bg-[#3ecf5a] shrink-0" />
-          <h1
-            className="text-[26px] font-bold text-[#181818] leading-none"
-            style={{ letterSpacing: "-1.04px" }}
-          >
-            Assignments
-          </h1>
-        </div>
-        <p className="text-[15px] text-[#5e5e5e] ml-[24px]" style={{ letterSpacing: "-0.48px" }}>
-          Manage and create assignments for your classes.
-        </p>
-      </div>
-
-      {/* ── Toolbar: Filter + Search — white card ── */}
-      <div className="px-8 pb-5">
-        <div
-          className="bg-white rounded-2xl px-5 py-3 flex items-center justify-between gap-4"
-          style={{ boxShadow: "0px 2px 8px rgba(0,0,0,0.05)" }}
-        >
-          <button
-            type="button"
-            className="flex items-center gap-2 text-[15px] font-medium text-[#5e5e5e] hover:text-[#303030] transition-colors cursor-pointer"
-            style={{ letterSpacing: "-0.48px" }}
-          >
-            <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
-              <path d="M3 5H17M6 10H14M9 15H11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-            Filter By
-          </button>
-
-          <div className="relative max-w-[360px] w-full">
-            <svg
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-[#a9a9a9] pointer-events-none"
-              width="16" height="16" viewBox="0 0 20 20" fill="none"
+      {/* ── Page header — only show if not empty ── */}
+      {!isEmpty && (
+        <div className="px-8 pt-8 pb-4">
+          <div className="flex items-center gap-2.5 mb-1">
+            <div className="size-3.5 rounded-full bg-[#3ecf5a] shrink-0" />
+            <h1
+              className="text-[26px] font-bold text-[#181818] leading-none"
+              style={{ letterSpacing: "-1.04px" }}
             >
-              <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M13.5 13.5L17 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search Assignment"
-              className="w-full h-10 pl-10 pr-4 rounded-full text-[15px] text-[#303030] placeholder:text-[#a9a9a9] outline-none"
-              style={{ background: "#f6f6f6", letterSpacing: "-0.48px" }}
-            />
+              Assignments
+            </h1>
+          </div>
+          <p className="text-[15px] text-[#5e5e5e] ml-[24px]" style={{ letterSpacing: "-0.48px" }}>
+            Manage and create assignments for your classes.
+          </p>
+        </div>
+      )}
+
+      {/* ── Toolbar: Filter + Search — only show if not empty ── */}
+      {!isEmpty && (
+        <div className="px-8 pb-5">
+          <div
+            className="bg-white rounded-2xl px-5 py-3 flex items-center justify-between gap-4"
+            style={{ boxShadow: "0px 2px 8px rgba(0,0,0,0.05)" }}
+          >
+            <button
+              type="button"
+              className="flex items-center gap-2 text-[15px] font-medium text-[#5e5e5e] hover:text-[#303030] transition-colors cursor-pointer"
+              style={{ letterSpacing: "-0.48px" }}
+            >
+              <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
+                <path d="M3 5H17M6 10H14M9 15H11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              Filter By
+            </button>
+
+            <div className="relative max-w-[360px] w-full">
+              <svg
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-[#a9a9a9] pointer-events-none"
+                width="16" height="16" viewBox="0 0 20 20" fill="none"
+              >
+                <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.5"/>
+                <path d="M13.5 13.5L17 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search Assignment"
+                className="w-full h-10 pl-10 pr-4 rounded-full text-[15px] text-[#303030] placeholder:text-[#a9a9a9] outline-none"
+                style={{ background: "#f6f6f6", letterSpacing: "-0.48px" }}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* ── Cards grid ── */}
       <div className="px-8 pb-32 flex-1">
-        {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center min-h-[calc(100vh-300px)] gap-8">
-            <div className="flex flex-col items-center gap-3">
-              <EmptyIllustration size={250} />
-              <div className="flex flex-col items-center gap-0.5 text-center max-w-[486px]">
-                <h2 className="text-xl font-bold text-[#303030] tracking-[-0.8px] leading-[1.4]">
+        {isEmpty ? (
+          <div className="flex flex-col items-center justify-center min-h-screen gap-8">
+            <div className="flex flex-col items-center gap-6">
+              <EmptyIllustration size={350} />
+              <div className="flex flex-col items-center gap-2 text-center max-w-[550px]">
+                <h2 className="text-2xl font-bold text-[#303030] tracking-[-0.8px] leading-[1.4]">
                   {search ? "No assignments match" : "No assignments yet"}
                 </h2>
-                <p className="text-base font-normal text-[rgba(94,94,94,0.8)] tracking-[-0.64px] leading-[1.4]">
+                <p className="text-base font-normal text-[rgba(94,94,94,0.8)] tracking-[-0.64px] leading-[1.6]">
                   {search
                     ? "Try adjusting your search filters or create a new assignment."
                     : "Create your first assignment to start collecting and grading student submissions."}
