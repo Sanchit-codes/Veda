@@ -21,6 +21,15 @@ export default function GeneratingManager() {
   const [phase, setPhase] = useState<Phase>("creating");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // Guard: redirect if accessed directly without a valid draft
+  useEffect(() => {
+    const draft = useAssignmentDraftStore.getState();
+    const hasDraft = draft.title?.trim() && draft.sections?.length > 0;
+    if (!hasDraft) {
+      router.replace("/assignments/new");
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Subscribe to generation store — reactive
   const status = useGenerationStore((s) => s.status);
   const sections = useGenerationStore((s) => s.sections);
